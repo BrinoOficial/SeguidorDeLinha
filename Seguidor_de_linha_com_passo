@@ -1,0 +1,146 @@
+// =====================
+// Hardware
+// =====================
+
+// Ponte H (controle dos motores):
+// EnA -> D3
+// In1 -> D4
+// In2 -> D5
+// In3 -> D6
+// In4 -> D7
+// EnB -> D9
+
+// Sensores IR de reflexão:
+// VCC -> VCC
+// GND -> GND
+// Esquerda -> D10
+// Direita -> D11
+
+// =====================
+// Configurações
+// =====================
+
+int inv_motor_d = 0; // Inversão do motor direito (0 ou 1)
+int inv_motor_e = 0; // Inversão do motor esquerdo (0 ou 1)
+
+int velocidade_reta = 200;  // Velocidade ao andar reto
+int velocidade_curva = 200; // Velocidade ao fazer curvas
+
+// Definindo os pinos dos motores
+#define IN1 4
+#define IN2 5
+#define VEL_A 3  // Velocidade motor esquerdo (EnA)
+
+#define IN3 6
+#define IN4 7
+#define VEL_B 9  // Velocidade motor direito (EnB)
+
+// Definindo os pinos dos sensores
+const int sensor_esquerda = 10;
+const int sensor_direita = 11;
+
+// =====================
+// Função de configuração inicial
+// =====================
+void setup() {
+  Serial.begin(9600);  // Inicia comunicação com o computador
+
+  // Define os pinos dos motores como saídas
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(VEL_A, OUTPUT);
+  pinMode(VEL_B, OUTPUT);
+
+  // Define os pinos dos sensores como entradas
+  pinMode(sensor_esquerda, INPUT);
+  pinMode(sensor_direita, INPUT);
+}
+
+// =====================
+// Funções de movimento
+// =====================
+
+void parar() {
+  Serial.println("Parar");
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+}
+
+void frente(int velocidade) {
+  digitalWrite(IN1, !inv_motor_e);
+  digitalWrite(IN2, inv_motor_e);
+  digitalWrite(IN3, inv_motor_d);
+  digitalWrite(IN4, !inv_motor_d);
+  analogWrite(VEL_A, velocidade);
+  analogWrite(VEL_B, velocidade);
+}
+
+void tras(int velocidade) {
+  digitalWrite(IN1, inv_motor_e);
+  digitalWrite(IN2, !inv_motor_e);
+  digitalWrite(IN3, !inv_motor_d);
+  digitalWrite(IN4, inv_motor_d);
+  analogWrite(VEL_A, velocidade);
+  analogWrite(VEL_B, velocidade);
+}
+
+void esquerda(int velocidade) {
+  digitalWrite(IN1, inv_motor_e);
+  digitalWrite(IN2, !inv_motor_e);
+  digitalWrite(IN3, inv_motor_d);
+  digitalWrite(IN4, !inv_motor_d);
+  analogWrite(VEL_A, velocidade);
+  analogWrite(VEL_B, velocidade);
+}
+
+void direita(int velocidade) {
+  digitalWrite(IN1, !inv_motor_e);
+  digitalWrite(IN2, inv_motor_e);
+  digitalWrite(IN3, !inv_motor_d);
+  digitalWrite(IN4, inv_motor_d);
+  analogWrite(VEL_A, velocidade);
+  analogWrite(VEL_B, velocidade);
+}
+
+// =====================
+// Função principal (executa repetidamente)
+// =====================
+void loop() {
+  // Leitura dos sensores
+  int leitura_esquerda = digitalRead(sensor_esquerda);
+  int leitura_direita = digitalRead(sensor_direita);
+
+  // Mostrar valores no monitor serial
+  Serial.print("Sensor Esquerda: ");
+  Serial.print(leitura_esquerda);
+  Serial.print("  Sensor Direita: ");
+  Serial.println(leitura_direita);
+
+  // Movimento por "passos" — anda, para e repete
+  if (leitura_direita && !leitura_esquerda) {
+    esquerda(velocidade_curva); // virar para a esquerda
+    delay(30);
+    parar();
+    delay(600);
+  }
+  else if (leitura_esquerda && !leitura_direita) {
+    direita(velocidade_curva); // virar para a direita
+    delay(30);
+    parar();
+    delay(600);
+  }
+  else if (leitura_esquerda && leitura_direita) {
+    parar(); // parou (possível fim da linha ou cruzamento)
+    delay(600);
+  }
+  else {
+    frente(velocidade_reta); // seguir em frente
+    delay(30);
+    parar();
+    delay(600);
+  }
+}
