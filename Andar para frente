@@ -1,0 +1,51 @@
+// Ponte H
+// EnA -> D3
+// In1 -> D4
+// In2 -> D5
+// In3 -> D6
+// In4 -> D7
+// EnB -> D9
+
+// Inverter motores (0 ou 1)
+int inv_motor_d = 0;
+int inv_motor_e = 0;
+
+// Velocidade
+int velocidade_reta = 200; // ajuste entre 0 e 255
+
+// Definindo os pinos para o motor E
+#define IN1 4
+#define IN2 5
+#define VEL_A 3
+
+// Definindo os pinos para o motor D
+#define IN3 6
+#define IN4 7
+#define VEL_B 9
+
+void setup() {
+  // Inicializa os pinos do motor
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(VEL_A, OUTPUT);
+  pinMode(VEL_B, OUTPUT);
+}
+
+void frente(int velocidade) {
+  // Motor Esquerdo
+  digitalWrite(IN1, !inv_motor_e);
+  digitalWrite(IN2, inv_motor_e);
+  // Motor Direito
+  digitalWrite(IN3, inv_motor_d);
+  digitalWrite(IN4, !inv_motor_d);
+  
+  // Velocidade
+  analogWrite(VEL_A, velocidade);
+  analogWrite(VEL_B, velocidade);
+}
+
+void loop() {
+  frente(velocidade_reta); // o robô anda sempre pra frente
+}
