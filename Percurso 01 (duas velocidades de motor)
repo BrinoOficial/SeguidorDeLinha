@@ -1,0 +1,90 @@
+// ===== Controle de Motores com Calibração =====
+// Ponte H (ex: L293D ou L298N)
+// IN1 -> Motor Esquerdo
+// IN2 -> Motor Esquerdo
+// ENA -> PWM Motor Esquerdo
+// IN3 -> Motor Direito
+// IN4 -> Motor Direito
+// ENB -> PWM Motor Direito
+
+#define IN1 4   // Motor Esquerdo
+#define IN2 5   // Motor Esquerdo
+#define VEL_A 3 // PWM motor esquerdo
+
+#define IN3 6   // Motor Direito
+#define IN4 7   // Motor Direito
+#define VEL_B 9 // PWM motor direito
+
+// >>> ALUNOS PODEM ALTERAR AQUI <<<
+
+// Velocidades (0 a 255) -> ajustar para corrigir curvas
+int velFrenteEsquerda = 200;
+int velFrenteDireita  = 200;
+
+int velVirarEsquerda  = 180;
+int velVirarDireita   = 180;
+
+int velFrente2Esquerda = 200;
+int velFrente2Direita  = 200;
+
+// Tempos em milissegundos
+int tempoFrente1 = 2000; // tempo do 1º movimento para frente
+int tempoVirar   = 800;  // tempo para virar ~90 graus (ajustar!)
+int tempoFrente2 = 2000; // tempo do 2º movimento para frente
+
+void setup() {
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(VEL_A, OUTPUT);
+  pinMode(VEL_B, OUTPUT);
+}
+
+void loop() {
+  // === 1. Seguir em frente ===
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(VEL_A, velFrenteEsquerda);
+  analogWrite(VEL_B, velFrenteDireita);
+  delay(tempoFrente1);
+
+  // === Para um instante ===
+  pararMotores();
+  delay(500);
+
+  // === 2. Virar à esquerda ===
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(VEL_A, velVirarEsquerda);
+  analogWrite(VEL_B, velVirarDireita);
+  delay(tempoVirar);
+
+  // === Para um instante ===
+  pararMotores();
+  delay(500);
+
+  // === 3. Seguir em frente de novo ===
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(VEL_A, velFrente2Esquerda);
+  analogWrite(VEL_B, velFrente2Direita);
+  delay(tempoFrente2);
+
+  // === Para no fim ===
+  pararMotores();
+  while(true); // trava no fim para não repetir
+}
+
+void pararMotores() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+}
