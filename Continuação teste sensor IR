@@ -1,0 +1,10 @@
+// Aciona o buzzer se algum sensor detectar linha preta
+  // (ajuste a lógica conforme o sensor: alguns retornam 0 no preto e outros 1)
+  if (leituraE == 0 || leituraD == 0) {  
+    digitalWrite(buzzer, HIGH);
+  } else {
+    digitalWrite(buzzer, LOW);
+  }
+
+  delay(300); // pequena pausa para facilitar leitura no monitor
+}
