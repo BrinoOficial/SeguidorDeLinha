@@ -1,0 +1,41 @@
+// ===== LEITURA DE SENSORES IR + BUZZER =====
+
+// Pinos dos sensores
+int sensor_esquerda = 10;
+int sensor_direita  = 11;
+
+// Pino do buzzer
+int buzzer = 8;
+
+void setup() {
+  pinMode(sensor_esquerda, INPUT);
+  pinMode(sensor_direita, INPUT);
+  pinMode(buzzer, OUTPUT);
+
+  Serial.begin(9600);
+  Serial.println("Iniciando leitura dos sensores IR...");
+  Serial.println("Anote os valores que aparecem para BRANCO e PRETO.");
+}
+
+void loop() {
+  // Leitura dos sensores (0 ou 1 se digital, mas pode variar se usar analogRead)
+  int leituraE = digitalRead(sensor_esquerda);
+  int leituraD = digitalRead(sensor_direita);
+
+  // Mostrar valores no monitor serial
+  Serial.print("Sensor Esquerda: ");
+  Serial.print(leituraE);
+  Serial.print("  |  Sensor Direita: ");
+  Serial.println(leituraD);
+
+  // Aciona o buzzer se algum sensor detectar linha preta
+  // (ajuste a lógica conforme o sensor: alguns retornam 0 no preto e outros 1)
+  if (leituraE == 0 || leituraD == 0) {  
+    digitalWrite(buzzer, HIGH);
+  } else {
+    digitalWrite(buzzer, LOW);
+  }
+
+  delay(300); // pequena pausa para facilitar leitura no monitor
+}
+
