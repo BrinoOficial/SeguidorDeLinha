@@ -1,12 +1,4 @@
-// ===== ROBÔ SEGUIDOR DE LINHA SIMPLES =====
-// IN1 / IN2 -> Motor Esquerdo
-// ENA -> PWM Motor Esquerdo
-// IN3 / IN4 -> Motor Direito
-// ENB -> PWM Motor Direito
-//
-// Sensores de linha (IR reflexivos):
-// Esquerda -> D10
-// Direita  -> D11
+// ===== ROBÔ SEGUIDOR DE LINHA COM PASSO =====
 
 // -------------------------
 // Pinos dos motores
@@ -14,7 +6,6 @@
 #define IN1 4
 #define IN2 5
 #define VEL_A 3   // PWM motor esquerdo
-
 #define IN3 6
 #define IN4 7
 #define VEL_B 9   // PWM motor direito
@@ -22,17 +13,17 @@
 // -------------------------
 // Pinos dos sensores
 // -------------------------
-const int sensor_esquerda = 10;
-const int sensor_direita  = 11;
+int sensor_esquerda = 10;
+int sensor_direita  = 11;
 
 // >>> ALUNOS PODEM ALTERAR AQUI <<<
-
 // Velocidade (0 a 255)
-int velocidadeReta  = 200; // quando anda reto
-int velocidadeCurva = 200; // quando vira
+int velocidadeReta  = 200; 
+int velocidadeCurva = 180; 
 
-// Tempo de pausa (em ms)
-int tempoPausa = 400;
+// Tempo de cada "passinho"
+int tempoPasso = 150;   // tempo andando (ms)
+int tempoParada = 100;  // tempo parado entre passos (ms)
 
 // -------------------------
 // Funções de movimento
@@ -100,22 +91,25 @@ void loop() {
   Serial.print("  Dir: ");
   Serial.println(leituraD);
 
-  // ===== Lógica simples =====
+  // ===== Movimento em passinhos =====
   if (leituraD && !leituraE) {
     esquerda(velocidadeCurva);
-    delay(tempoPausa);
-  }
+    delay(tempoPasso);
+  } 
   else if (leituraE && !leituraD) {
     direita(velocidadeCurva);
-    delay(tempoPausa);
-  }
+    delay(tempoPasso);
+  } 
   else if (leituraE && leituraD) {
     parar();
-    delay(tempoPausa);
-  }
+    delay(tempoPasso);
+  } 
   else {
     frente(velocidadeReta);
-    delay(tempoPausa);
+    delay(tempoPasso);
   }
-}
 
+  // Para sempre depois do movimento
+  parar();
+  delay(tempoParada);
+}
